@@ -1,23 +1,14 @@
-import "./style.scss";
-import Login from "./pages/login";
+import React from "react";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import { Layout } from "./Layout";
+
+import "./style.scss";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import Single from "./pages/Single";
 import Write from "./pages/Write";
-
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-
-const Layout = () => {
-	return ( 
-		<>
-			<Navbar />
-			<Outlet />
-			<Footer />
-		</>
-	);
-};
+// const Layout
 
 const router = createBrowserRouter([
 	{
@@ -48,7 +39,7 @@ const router = createBrowserRouter([
 	},
 ]);
 
-function App() {
+export default function App() {
 	return (
 		<div className="app">
 			<div className="container">
@@ -57,5 +48,3 @@ function App() {
 		</div>
 	);
 }
-
-export default App;
