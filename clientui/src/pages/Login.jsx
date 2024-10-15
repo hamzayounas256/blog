@@ -18,9 +18,10 @@ export default function Login() {
 		e.preventDefault();
 		try {
 			await axios.post("http://localhost:8800/api/auth/login", input);
+			console.log("Successful login");
 			navigate("/");
 		} catch (err) {
-			setError(err.response.data);
+			setError(err.response);
 		}
 	};
 	return (
