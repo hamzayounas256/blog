@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Edit from "../assets/img/edit.png";
 import Delete from "../assets/img/delete.png";
 import Menu from "../components/Menu";
@@ -12,8 +12,9 @@ export default function Single() {
 
 	const location = useLocation();
 
+	const navigate = useNavigate();
+
 	const postId = location.pathname.split("/")[2];
-	console.log(postId);
 
 	const { currentUser } = useContext(AuthContext);
 
@@ -29,29 +30,38 @@ export default function Single() {
 		fetchData();
 	}, [postId]);
 
+	const handleDelete = async () => {
+		try {
+			await axios.delete(`/posts/${postId}`);
+			navigate("/");
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	return (
 		<div className="single">
 			<div className="content">
 				<img src={post?.img} alt="" />
 				<div className="user">
-					{post.UserImg && <img src={post?.UserImg} alt="" />}
+					{post.UserImg && <img src={post.UserImg} alt="" />}
 					<div className="info">
-						<span>{post?.username}</span>
-						<p>Posted {moment(post.date).fromNow()}</p>
+						<span>{post.username}</span>
+						<span>Posted {moment(post.date).fromNow()}</span>
 					</div>
-					{currentUser.username === post.username && (
+					{currentUser?.username === post?.username && (
 						<div className="edit">
 							<Link to="/write">
 								<img src={Edit} alt="" />
 							</Link>
-							<img src={Delete} alt="" />
+							<img onClick={handleDelete} src={Delete} alt="" />
 						</div>
 					)}
 				</div>
 				<h1>{post.title}</h1>
 				{post.desc}
 			</div>
-			<Menu />
+			<Menu cat={post.cat} />
 		</div>
 	);
 }
