@@ -1,4 +1,6 @@
 import { db } from "../db.js";
+import jwt from "jsonwebtoken";
+
 export const getPosts = (req, res) => {
 	const q = req.query.cat
 		? "SELECT * FROM posts WHERE cat=?"
@@ -13,6 +15,7 @@ export const getPosts = (req, res) => {
 export const getPost = (req, res) => {
 	const q = `
 		SELECT 
+			p.id,
 			u.username, 
 			p.title, 
 			p.desc, 
@@ -40,5 +43,23 @@ export const updatePost = (req, res) => {
 };
 
 export const deletePost = (req, res) => {
-	res.json("delete post");
+	const token = req.cookies.access_token;
+	if (!token) return res.status(401).json("Unauthorized");
+
+	jwt.verify(token, "jwtkey", (err, userInfo) => {
+		if (err) return res.status(403).json("Token is not valid");
+
+		const postId = req.params.id;
+		const q = "DELETE FROM posts WHERE id =? AND uid =?";
+
+		db.query(q, [postId, userInfo.id], (err, data) => {
+			if (err)
+				return res.status(403).json("You can delete only your own posts");
+			if (data.affectedRows === 0)
+				return res
+					.status(404)
+					.json("Post not found or not authorized to delete");
+			return res.status(200).json("Post deleted successfully");
+		});
+	});
 };
