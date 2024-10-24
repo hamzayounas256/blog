@@ -2,12 +2,18 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import axios from "axios";
 import "react-quill/dist/quill.snow.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import moment from "moment";
 
 export default function Write() {
-	const [value, setValue] = useState("");
-	const [title, setTitle] = useState("");
+	const state = useLocation().state;
+	const [title, setTitle] = useState(state?.title || "");
+	const [value, setValue] = useState(state?.desc || "");
 	const [file, setFile] = useState(null);
-	const [cat, setCat] = useState("");
+	const [cat, setCat] = useState(state?.cat || "");
+	const navigate = useNavigate();
+
+	// console.log(state);
 
 	const upload = async (e) => {
 		try {
@@ -22,8 +28,24 @@ export default function Write() {
 
 	const handleClick = async (e) => {
 		e.preventDefault();
-		const imgUrl = upload();
+		const imgUrl = await upload();
+
 		try {
+			state
+				? await axios.put(`/posts/${state.id}`, {
+						title,
+						desc: value,
+						img: file ? imgUrl : "",
+						cat,
+				  })
+				: await axios.post(`/posts/`, {
+						title,
+						desc: value,
+						img: file ? imgUrl : "",
+						cat,
+						date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+				  });
+			navigate("/");
 		} catch (error) {
 			console.log(error);
 		}
@@ -35,6 +57,7 @@ export default function Write() {
 				<input
 					type="text"
 					placeholder="title"
+					value={title}
 					className=""
 					name=""
 					id=""
@@ -86,6 +109,7 @@ export default function Write() {
 					<div className="cat">
 						<input
 							type="radio"
+							checked={cat === "art"}
 							name="cat"
 							value="art"
 							id="art"
@@ -96,6 +120,7 @@ export default function Write() {
 					<div className="cat">
 						<input
 							type="radio"
+							checked={cat === "science"}
 							name="cat"
 							value="science"
 							id="science"
@@ -106,6 +131,7 @@ export default function Write() {
 					<div className="cat">
 						<input
 							type="radio"
+							checked={cat === "technology"}
 							name="cat"
 							value="technology"
 							id="technology"
@@ -116,6 +142,7 @@ export default function Write() {
 					<div className="cat">
 						<input
 							type="radio"
+							checked={cat === "cinema"}
 							name="cat"
 							value="cinema"
 							id="cinema"
@@ -126,6 +153,7 @@ export default function Write() {
 					<div className="cat">
 						<input
 							type="radio"
+							checked={cat === "design"}
 							name="cat"
 							value="design"
 							id="design"
@@ -136,6 +164,7 @@ export default function Write() {
 					<div className="cat">
 						<input
 							type="radio"
+							checked={cat === "food"}
 							name="cat"
 							value="food"
 							id="food"

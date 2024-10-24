@@ -18,6 +18,11 @@ export default function Single() {
 
 	const { currentUser } = useContext(AuthContext);
 
+	const getText = (html) => {
+		const parser = new DOMParser().parseFromString(html, "text/html");
+		return parser.body.textContent || "";
+	};
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -42,7 +47,7 @@ export default function Single() {
 	return (
 		<div className="single">
 			<div className="content">
-				<img src={post?.img} alt="" />
+				<img src={`../upload/${post?.img}`} alt="" />
 				<div className="user">
 					{post.UserImg && <img src={post.UserImg} alt="" />}
 					<div className="info">
@@ -51,7 +56,7 @@ export default function Single() {
 					</div>
 					{currentUser?.username === post?.username && (
 						<div className="edit">
-							<Link to="/write">
+							<Link to="/write?edit=2" state={post}>
 								<img src={Edit} alt="" />
 							</Link>
 							<img onClick={handleDelete} src={Delete} alt="" />
@@ -59,7 +64,7 @@ export default function Single() {
 					)}
 				</div>
 				<h1>{post.title}</h1>
-				{post.desc}
+				{getText(post.desc)}
 			</div>
 			<Menu cat={post.cat} />
 		</div>

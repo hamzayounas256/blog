@@ -29,6 +29,10 @@ import axios from "axios";
 // 	},
 // ];
 
+const getText = (html) => {
+	const parser = new DOMParser().parseFromString(html, "text/html");
+	return parser.body.textContent || "";
+};
 export default function Home() {
 	const [posts, setPosts] = useState([]);
 	const cat = useLocation().search;
@@ -50,14 +54,14 @@ export default function Home() {
 				{posts.map((item) => (
 					<div className="post" key={item.id}>
 						<div className="img">
-							<img src={item.img} alt="" />
+							<img src={`../upload/${item.img}`} alt="" />
 						</div>
 						<div className="content">
 							<Link className="link" to={`/post/${item.id}`}>
 								<h1>{item.title}</h1>
 							</Link>
-							<p>{item.desc}</p>
-							<button>Read more</button>
+							<p>{getText(item.desc)}</p>
+							{/* <button>Read more</button> */}
 						</div>
 					</div>
 				))}
